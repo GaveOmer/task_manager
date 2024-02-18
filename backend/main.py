@@ -1,11 +1,13 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from typing import Optional
 app = FastAPI()
 
 class Task(BaseModel):
   name: str
-  description: str | None
+  description: Optional[str] = None
 
 @app.get('/api')
 def get_item():
-  return {'message': 'Hello World'}
+  task = Task(name = 'asdf')
+  return {'message': task}
