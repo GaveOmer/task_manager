@@ -1,27 +1,46 @@
-const Tasks_list = [
-  {id: 1, category: "restapi", name:"task1"},
-  {id: 2, category: "restapi", name:"task2"},
-  {id: 3, category: "frontend", name:"task1"},
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 
-]
-
-
-
+const BASE_URL = 'http://localhost:3000/api';
 
 const Index = () => {
-  return (
-    <div className='flex py-20 gap-10 w-screen justify-center items-center'>
-      {Tasks_list.map((task) => (
-        <ul key={Tasks_list.id}>
-          <li>
-            <p>{task.category}</p>
-            <p>{task.name}</p>
-          </li>
-        </ul>
-        ))}
-    </div>
-    
-  )
-}
+	const [tasks, setTasks] = useState([]);
+	const [isLoading, setIsLoading] = useState(false);
+	const [error, setError] = useState();
+	useEffect(() => {
+		const fetchTasks = async () => {
+			try {
+				setIsLoading(true);
+				const response = await axios.get(`${BASE_URL}/tasks/`);
+				setTasks(response.data);
+			} catch (error) {
+				setError(error);
+			} finally {
+				setIsLoading(false);
+			}
+		};
+		fetchTasks();
+	}, []);
 
-export default Index
+	if (isLoading) {
+		return <div>LOADING...</div>;
+	}
+	if (error) {
+		return <div>there is a some error</div>;
+	}
+	return (
+		<section>
+			<h1>TASKS</h1>
+			<ul>
+				{tasks.map((task) => (
+					<li key={task.id}>
+						<p>{task.name}</p>
+						<p>{task.description}</p>
+					</li>
+				))}
+			</ul>
+		</section>
+	);
+};
+
+export default Index;

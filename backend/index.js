@@ -1,39 +1,29 @@
 const express = require('express');
+
+const cors = require('cors');
 const mongoose = require('mongoose');
 
-const Task = require('./models/task.model.js');
+const taskRoute = require('./routes/task.route.js');
 const app = express();
 
+//middlewares
+
+//data to json
 app.use(express.json());
+// for forms
+app.use(express.urlencoded({ extended: false }));
+// cors
+app.use(
+	cors({
+		origin: 'http://localhost:5173',
+		methods: ['POST', 'PUT', 'GET', 'DELETE'],
+	})
+);
+//routes
+app.use('/api/tasks', taskRoute);
 
 app.get('/', function (req, res) {
 	res.send('Hello Wosasrld');
-});
-
-app.get('/api/tasks', async (req, res) => {
-	try {
-		const tasks = await Task.find({});
-		res.status(200).json(tasks);
-	} catch (error) {}
-	res.status(500).json({ message: error.message });
-});
-
-app.get('/api/tasks/:id', async (req, res) => {
-	try {
-		const task = await Task.find({ id: req.params.id });
-    res.status(200).json(task);
-	} catch (error) {
-		res.status(500).json({ message: error.message });
-	}
-});
-
-app.post('/api/post_tasks', async (req, res) => {
-	try {
-		const task = await Task.create(req.body);
-		res.status(200).json(task);
-	} catch (error) {
-		res.status(500).json({ message: error.message });
-	}
 });
 
 mongoose
@@ -43,7 +33,7 @@ mongoose
 	.then(() => {
 		console.log('Connected');
 		app.listen(3000, () => {
-			console.log('server is running on port 3000');
+			console.log('server is running on  http://localhost:3000/api');
 		});
 	})
 	.catch(() => {
